@@ -1,6 +1,6 @@
 {
-    "name": "sunny/router",
-    "description": "A php router for sunny framework",
+    "name": "funny/router",
+    "description": "Router For Funny Framework",
     "autoload": {
         "psr-4": {"Funny\\": "src/"}
     },
@@ -14,7 +14,6 @@
             "email": "anoxia@engineer.com"
         }
     ],
-    "require": {
-        "monolog/monolog": "^1.23"
-    }
+    "minimum-stability": "stable",
+    "require": {}
 }

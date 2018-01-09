@@ -3,4 +3,4 @@ composer.lock
 composer.phar
 /vendor/
 Thumbs.db
-test.php
+/test.php

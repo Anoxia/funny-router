@@ -59,11 +59,10 @@ class Tree implements TreeInterface
      * @param array $tokens
      * @param callable $callback
      * @param array $events
-     * @param int $optionsMode
      * @return mixed
      * @throws TreeException
      */
-    private function parse(&$node, $tokens, $callback, $events, $optionsMode)
+    private function parse(&$node, $tokens, $callback, $events)
     {
         // 取一个节点名称
         $token = array_shift($tokens);
@@ -78,7 +77,6 @@ class Tree implements TreeInterface
         if (empty($tokens)) {
             $leaf['events']  = $events;
             $leaf['handle']  = $callback;
-            $leaf['options'] = $optionsMode;
         }
 
         // 当前路由空节点霉是否为正则节点
@@ -122,7 +120,7 @@ class Tree implements TreeInterface
 
         // 创建子节点
         if ($token) {
-            return $this->parse($node[$token], $tokens, $callback, $events, $optionsMode);
+            return $this->parse($node[$token], $tokens, $callback, $events);
         }
 
         return true;
@@ -134,11 +132,10 @@ class Tree implements TreeInterface
      * @param string $path
      * @param callable|array $callback
      * @param array $events
-     * @param int $optionsMode
      * @return mixed|void
      * @throws TreeException
      */
-    public function add($method, $path, $callback, $events = [], $optionsMode = 0)
+    public function add($method, $path, $callback, $events = [])
     {
         // 方法作为根节点
         if (!isset($this->map[$method])) {
@@ -148,7 +145,7 @@ class Tree implements TreeInterface
         $tokens = explode($this->separator, trim($path, $this->separator));
 
         // 执行URL解析
-        $this->parse($this->map[$method], $tokens, $callback, $events, $optionsMode);
+        $this->parse($this->map[$method], $tokens, $callback, $events);
     }
 
     /**

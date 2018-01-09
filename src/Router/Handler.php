@@ -13,12 +13,6 @@
      private $handle = null;
 
      /**
-      * 跨域头类型
-      * @var int
-      */
-     private $options = 0;
-
-     /**
       * 已匹配的变量
       * @var array
       */
@@ -37,6 +31,12 @@
      private $afterEvents = [];
 
      /**
+      * 跨域options回调，用来发送跨域头
+      * @var array
+      */
+     private $optionsEvent = [];
+
+     /**
       * 回调(方法)执行返回值
       * @var mixed
       */
@@ -46,13 +46,11 @@
       * Handler constructor.
       * @param callable|array $handle
       * @param array $events
-      * @param int $options
       * @param array $matchVars
       */
-     public function __construct($handle, $events, $options, $matchVars)
+     public function __construct($handle, $events, $matchVars)
      {
          $this->handle  = $handle;
-         $this->options = $options;
          $this->params  = $matchVars;
 
          if (isset($events['before'])) {
@@ -61,6 +59,10 @@
 
          if (isset($events['after'])) {
              $this->afterEvents  = $events['after'];
+         }
+
+         if (isset($events['options'])) {
+             $this->optionsEvent = $events['options'];
          }
      }
 
@@ -74,6 +76,11 @@
          // 拼接参数
          if (!empty($params)) {
              $this->params[] = $params;
+         }
+
+         // options跨域头信息
+         if (!empty($this->optionsEvent)) {
+             $this->callEvent([$this->optionsEvent]);
          }
 
          // 前置事件

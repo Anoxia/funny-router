@@ -25,10 +25,9 @@ interface TreeInterface
      * @param string $path
      * @param callable|array $callback
      * @param array $events
-     * @param int $optionsMode
      * @return mixed|void
      */
-    public function add($method, $path, $callback, $events, $optionsMode);
+    public function add($method, $path, $callback, $events);
 
     /**
      * 执行路由匹配

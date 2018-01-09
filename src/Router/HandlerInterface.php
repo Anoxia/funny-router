@@ -11,10 +11,9 @@ interface HandlerInterface
      * HandlerInterface constructor.
      * @param callable|array $handle
      * @param array $events
-     * @param int $options
      * @param array $matchVars
      */
-    public function __construct($handle, $events, $options, $matchVars);
+    public function __construct($handle, $events, $matchVars);
 
     /**
      * 执行命中目标回调函数(方法)

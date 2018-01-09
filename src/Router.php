@@ -4,6 +4,7 @@ namespace Funny;
 use Funny\Router\Collection;
 use Funny\Router\Handler;
 use Funny\Router\Options;
+use Funny\Router\OptionsAbstract;
 use Funny\Router\Tree;
 
 /**
@@ -56,18 +57,17 @@ class Router implements RouterInterface
     protected $handler = null;
 
     /**
-     * @var bool
+     * @var OptionsAbstract
      */
-    protected $enableOptions = false;
+    protected $optionsHandler = null;
 
     /**
      * Router constructor.
      * @param bool $cached
      * @param string $file
-     * @param bool $enableOptions
      * @throws RouterException
      */
-    public function __construct($cached = false, $file = '', $enableOptions = false)
+    public function __construct($cached = false, $file = '')
     {
         // 开启路由缓存
         if ($cached === true) {
@@ -79,13 +79,20 @@ class Router implements RouterInterface
             $this->cacheFile = $file;
         }
 
-        // 允许自动处理Options头
-        if ($this->enableOptions !== $enableOptions) {
-            $this->enableOptions = $enableOptions;
-        }
+        // 设置跨域处理类
+        $this->optionsHandler = new Options();
 
         // 路由树基类
         $this->tree = new Tree();
+    }
+
+    /**
+     * 设置通用跨域处理类
+     * @param OptionsAbstract $handler
+     */
+    public function setOptionsHandler(OptionsAbstract $handler)
+    {
+        $this->optionsHandler = $handler;
     }
 
     /**
@@ -124,7 +131,7 @@ class Router implements RouterInterface
      * @return $this
      * @throws RouterException
      */
-    public function head($path, $callback, $optionsMode = Options::NONE)
+    public function head($path, $callback, $optionsMode = OptionsAbstract::NONE)
     {
         $this->add('HEAD', $path, $callback, [], $optionsMode);
 
@@ -139,7 +146,7 @@ class Router implements RouterInterface
      * @return $this
      * @throws RouterException
      */
-    public function get($path, $callback, $optionsMode = Options::NONE)
+    public function get($path, $callback, $optionsMode = OptionsAbstract::NONE)
     {
         $this->add('GET', $path, $callback, [], $optionsMode);
 
@@ -154,7 +161,7 @@ class Router implements RouterInterface
      * @return $this
      * @throws RouterException
      */
-    public function post($path, $callback, $optionsMode = Options::NONE)
+    public function post($path, $callback, $optionsMode = OptionsAbstract::NONE)
     {
         $this->add('POST', $path, $callback, [], $optionsMode);
 
@@ -169,7 +176,7 @@ class Router implements RouterInterface
      * @return $this
      * @throws RouterException
      */
-    public function put($path, $callback, $optionsMode = Options::NONE)
+    public function put($path, $callback, $optionsMode = OptionsAbstract::NONE)
     {
         $this->add('PUT', $path, $callback, [], $optionsMode);
 
@@ -184,7 +191,7 @@ class Router implements RouterInterface
      * @return $this
      * @throws RouterException
      */
-    public function delete($path, $callback, $optionsMode = Options::NONE)
+    public function delete($path, $callback, $optionsMode = OptionsAbstract::NONE)
     {
         $this->add('DELETE', $path, $callback, [], $optionsMode);
 
@@ -199,7 +206,7 @@ class Router implements RouterInterface
      * @return $this
      * @throws RouterException
      */
-    public function patch($path, $callback, $optionsMode = Options::NONE)
+    public function patch($path, $callback, $optionsMode = OptionsAbstract::NONE)
     {
         $this->add('PATCH', $path, $callback, [], $optionsMode);
 
@@ -207,7 +214,7 @@ class Router implements RouterInterface
     }
 
     /**
-     * Options Method
+     * OptionsAbstract Method
      * @param string $path
      * @param callable|array $callback
      * @return $this
@@ -294,7 +301,7 @@ class Router implements RouterInterface
      * @throws RouterException
      * @throws Router\TreeException
      */
-    public function add($method, $path, $handle, $events = [], $optionsMode = Options::NONE)
+    public function add($method, $path, $handle, $events = [], $optionsMode = OptionsAbstract::NONE)
     {
         // 转换成大写
         $method = strtoupper($method);
@@ -303,30 +310,16 @@ class Router implements RouterInterface
             throw new RouterException("不支持的方法: {$method}", 406);
         }
 
-        $this->tree->add($method, $path, $handle, $events, $optionsMode);
+        // 生成options跨域回调
+        $events['options'] = $this->optionsHandler->getMethodHandle($optionsMode);;
 
-        // todo: 待处理swoole头发送问题
-//        if ($this->enableOptions) {
-//            // 跨域头信息方法
-//            $optionsHandle = [Options::class, 'none'];
-//
-//            switch ($optionsMode) {
-//                case Options::READ:
-//                    $optionsHandle = [Options::class, 'read'];
-//                    break;
-//                case Options::CREATE:
-//                    $optionsHandle = [Options::class, 'create'];
-//                    break;
-//                case Options::EDIT:
-//                    $optionsHandle = [Options::class, 'edit'];
-//                    break;
-//                case Options::UNLIMITED:
-//                    $optionsHandle = [Options::class, 'unlimited'];
-//                    break;
-//            }
-//
-//            $this->tree->add('OPTIONS', $path, $optionsHandle);
-//        }
+        // 添加至路由树
+        $this->tree->add($method, $path, $handle, $events);
+
+        // 添加options方法
+        if (!empty($events['options'])) {
+            $this->tree->add('OPTIONS', $path, $events['options']);
+        }
     }
 
     /**
@@ -354,11 +347,10 @@ class Router implements RouterInterface
         // 未匹配到任何路由
         if ($node === false) {
 
+            // 手动创建未找到节点
             $this->attachNode = [
-                // TODO: notFound
                 'handle'    => $this->events['notFund'],
                 'events'    => [],
-                'options'   => Options::NONE,
                 'matchVars' => []
             ];
 
@@ -370,7 +362,6 @@ class Router implements RouterInterface
         $this->handler = new Handler(
             $this->attachNode['handle'],
             $this->attachNode['events'],
-            $this->attachNode['options'],
             $this->attachNode['matchVars']
         );
 

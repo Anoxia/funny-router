@@ -169,7 +169,7 @@ class Collection implements CollectionInterface
      * @return $this
      * @throws CollectionException
      */
-    public function get($routePattern, $handle, $optionsMode = Options::NONE)
+    public function get($routePattern, $handle, $optionsMode = OptionsAbstract::NONE)
     {
         // 创建一条URL规则
         $this->create('GET', $routePattern, [$this->class, $handle], $optionsMode);
@@ -185,7 +185,7 @@ class Collection implements CollectionInterface
      * @return $this
      * @throws CollectionException
      */
-    public function post($routePattern, $handle, $optionsMode = Options::NONE)
+    public function post($routePattern, $handle, $optionsMode = OptionsAbstract::NONE)
     {
         // 创建一条URL规则
         $this->create('POST', $routePattern, [$this->class, $handle], $optionsMode);
@@ -201,7 +201,7 @@ class Collection implements CollectionInterface
      * @return $this
      * @throws CollectionException
      */
-    public function put($routePattern, $handle, $optionsMode = Options::NONE)
+    public function put($routePattern, $handle, $optionsMode = OptionsAbstract::NONE)
     {
         // 创建一条URL规则
         $this->create('PUT', $routePattern, [$this->class, $handle], $optionsMode);
@@ -217,7 +217,7 @@ class Collection implements CollectionInterface
      * @return $this
      * @throws CollectionException
      */
-    public function delete($routePattern, $handle, $optionsMode = Options::NONE)
+    public function delete($routePattern, $handle, $optionsMode = OptionsAbstract::NONE)
     {
         // 创建一条URL规则
         $this->create('DELETE', $routePattern, [$this->class, $handle], $optionsMode);
@@ -233,7 +233,7 @@ class Collection implements CollectionInterface
      * @return $this
      * @throws CollectionException
      */
-    public function patch($routePattern, $handle, $optionsMode = Options::NONE)
+    public function patch($routePattern, $handle, $optionsMode = OptionsAbstract::NONE)
     {
         // 创建一条URL规则
         $this->create('PATCH', $routePattern, [$this->class, $handle], $optionsMode);
@@ -242,7 +242,7 @@ class Collection implements CollectionInterface
     }
 
     /**
-     * Options Method
+     * OptionsAbstract Method
      * @param string $routePattern
      * @param callable $handle
      * @return $this
@@ -251,7 +251,7 @@ class Collection implements CollectionInterface
     public function options($routePattern, $handle)
     {
         // 创建一条URL规则
-        $this->create('OPTIONS', $routePattern, [$this->class, $handle], Options::NONE);
+        $this->create('OPTIONS', $routePattern, [$this->class, $handle], OptionsAbstract::NONE);
 
         return $this;
     }

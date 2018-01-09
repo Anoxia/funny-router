@@ -2,7 +2,7 @@
 namespace Funny;
 
 use Funny\Router\CollectionInterface;
-use Funny\Router\Options;
+use Funny\Router\OptionsAbstract;
 
 /**
  * Interface RouterInterface
@@ -16,6 +16,12 @@ interface RouterInterface
      * @param string $path
      */
     public function __construct($cached = true, $path = '');
+
+    /**
+     * 设置通用跨域处理类
+     * @param OptionsAbstract $handler
+     */
+    public function setOptionsHandler(OptionsAbstract $handler);
 
     /**
      * 设置指定方法请求允许方法
@@ -38,7 +44,7 @@ interface RouterInterface
      * @param int $optionsMode
      * @return $this
      */
-    public function head($path, $callback, $optionsMode = 0);
+    public function head($path, $callback, $optionsMode = OptionsAbstract::NONE);
 
     /**
      * HTTP GET
@@ -47,7 +53,7 @@ interface RouterInterface
      * @param int $optionsMode
      * @return $this
      */
-    public function get($path, $callback, $optionsMode = 0);
+    public function get($path, $callback, $optionsMode = OptionsAbstract::NONE);
 
     /**
      * HTTP POST
@@ -56,7 +62,7 @@ interface RouterInterface
      * @param int $optionsMode
      * @return $this
      */
-    public function post($path, $callback, $optionsMode = 0);
+    public function post($path, $callback, $optionsMode = OptionsAbstract::NONE);
 
     /**
      * HTTP PUT
@@ -65,7 +71,7 @@ interface RouterInterface
      * @param int $optionsMode
      * @return $this
      */
-    public function put($path, $callback, $optionsMode = 0);
+    public function put($path, $callback, $optionsMode = OptionsAbstract::NONE);
 
     /**
      * HTTP DELETE
@@ -74,7 +80,7 @@ interface RouterInterface
      * @param int $optionsMode
      * @return $this
      */
-    public function delete($path, $callback, $optionsMode = 0);
+    public function delete($path, $callback, $optionsMode = OptionsAbstract::NONE);
 
     /**
      * HTTP PATCH
@@ -83,7 +89,7 @@ interface RouterInterface
      * @param int $optionsMode
      * @return $this
      */
-    public function patch($path, $callback, $optionsMode = 0);
+    public function patch($path, $callback, $optionsMode = OptionsAbstract::NONE);
 
     /**
      * HTTP OPTIONS
@@ -109,7 +115,7 @@ interface RouterInterface
      * @throws RouterException
      * @throws Router\TreeException
      */
-    public function add($method, $path, $handle, $events = [], $optionsMode = Options::NONE);
+    public function add($method, $path, $handle, $events = [], $optionsMode = OptionsAbstract::NONE);
 
     /**
      * 执行路由操作

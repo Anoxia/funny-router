@@ -1,12 +1,6 @@
 {
     "name": "funny/router",
     "description": "Router For Funny Framework",
-    "autoload": {
-        "psr-4": {"Funny\\": "src/"}
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^6.5"
-    },
     "license": "BSD",
     "authors": [
         {
@@ -14,6 +8,15 @@
             "email": "anoxia@engineer.com"
         }
     ],
+    "autoload": {
+        "psr-4": {"Funny\\": "src/"}
+    },
+    "autoload-dev": {
+        "psr-4": {"Tests\\": "tests"}
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
     "minimum-stability": "stable",
     "require": {}
 }

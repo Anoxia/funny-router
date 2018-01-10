@@ -50,7 +50,7 @@
       */
      public function __construct($handle, $events, $matchVars)
      {
-         $this->handle  = $handle;
+         $this->handle  = [$handle];
          $this->params  = $matchVars;
 
          if (isset($events['before'])) {
@@ -62,14 +62,14 @@
          }
 
          if (isset($events['options'])) {
-             $this->optionsEvent = $events['options'];
+             $this->optionsEvent = [$events['options']];
          }
      }
 
      /**
       * 指定URL绑定的函数(方法)
       * @param mixed $params
-      * @return mixed|void
+      * @return $this
       */
      public function dispatch($params = null)
      {
@@ -79,18 +79,18 @@
          }
 
          // options跨域头信息
-         if (!empty($this->optionsEvent)) {
-             $this->callEvent([$this->optionsEvent]);
-         }
+         $this->callEvent($this->optionsEvent);
 
          // 前置事件
          $this->callEvent($this->beforeEvents);
 
          // 自身事件
-         $this->callEvent([$this->handle], true);
+         $this->callEvent($this->handle, true);
 
          // 后置事件
          $this->callEvent($this->afterEvents);
+
+         return $this;
      }
 
      /**

@@ -1,0 +1,8 @@
+<phpunit color="true" bootstrap="vendor/autoload.php">
+    <testsuites>
+        <testsuite name="router">
+            <directory>tests</directory>
+            <file>tests/MicroRouteTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>

@@ -39,7 +39,7 @@ class Router implements RouterInterface
     /**
      * @var array
      */
-    protected $events = [];
+    protected $notFoundHandle = [];
 
     /**
      * @var Tree
@@ -78,6 +78,9 @@ class Router implements RouterInterface
             $this->cached    = true;
             $this->cacheFile = $file;
         }
+
+        // 默认notFound处理方法
+        $this->notFoundHandle = [$this, 'defaultNotFoundHandle'];
 
         // 设置跨域处理类
         $this->optionsHandler = new Options();
@@ -265,7 +268,7 @@ class Router implements RouterInterface
                         }
 
                         // 添加路由
-                        $this->add($method, $url, [$handlerClass, $handlerMethod], $options);
+                        $this->add($method, $url, [$handlerClass, $handlerMethod], [], $options);
                     }
                 }
                 // 非法参数
@@ -311,15 +314,19 @@ class Router implements RouterInterface
         }
 
         // 生成options跨域回调
-        $events['options'] = $this->optionsHandler->getMethodHandle($optionsMode);;
+        $optionsHandle = $this->optionsHandler->getMethodHandle($optionsMode);
+
+        // 添加options方法
+        if (!empty($optionsHandle)) {
+            // 添加对应的OPTIONS方法
+            $this->tree->add('OPTIONS', $path, $optionsHandle);
+
+            // 创建options事件回调
+            $events['options'] = $optionsHandle;
+        }
 
         // 添加至路由树
         $this->tree->add($method, $path, $handle, $events);
-
-        // 添加options方法
-        if (!empty($events['options'])) {
-            $this->tree->add('OPTIONS', $path, $events['options']);
-        }
     }
 
     /**
@@ -349,7 +356,7 @@ class Router implements RouterInterface
 
             // 手动创建未找到节点
             $this->attachNode = [
-                'handle'    => $this->events['notFund'],
+                'handle'    => $this->notFoundHandle,
                 'events'    => [],
                 'matchVars' => []
             ];
@@ -377,10 +384,21 @@ class Router implements RouterInterface
     public function notFound($callback)
     {
         if (is_callable($callback)) {
-            $this->events['notFund'] = $callback;
+            $this->notFoundHandle = $callback;
         } else {
             throw new RouterException("notFound方法参数必须为匿名函数或可调用的方法", 500);
         }
+    }
+
+    /**
+     * 默认URL未找到方法
+     */
+    public function defaultNotFoundHandle()
+    {
+        header("HTTP/1.0 404 Not Found");
+        header("Status: 404 Not Found");
+
+        echo '<h1>Resource Not Found</h1>';
     }
 
     /**

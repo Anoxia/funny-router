@@ -137,12 +137,21 @@ class Tree implements TreeInterface
      */
     public function add($method, $path, $callback, $events = [])
     {
-        // 方法作为根节点
+        // HTTP方法作为根节点
         if (!isset($this->map[$method])) {
             $this->map[$method] = $this->defaultNode;
         }
 
-        $tokens = explode($this->separator, trim($path, $this->separator));
+        // 解析URL路径
+        $path   = trim($path, $this->separator);
+        if (empty($path)) {
+            $tokens = [];
+        } else {
+            $tokens = explode($this->separator, $path);
+        }
+
+        // 处理根目录符号
+        array_unshift($tokens, $this->separator);
 
         // 执行URL解析
         $this->parse($this->map[$method], $tokens, $callback, $events);
@@ -224,7 +233,11 @@ class Tree implements TreeInterface
             return false;
         }
 
+        // 解析URL路径
         $tokens = explode($this->separator, trim($path, $this->separator));
+
+        // 处理根目录符号
+        array_unshift($tokens, $this->separator);
 
         // 执行路由查找
         $attachNode = $this->resolve($this->map[$method], $tokens);

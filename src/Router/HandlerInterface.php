@@ -18,7 +18,7 @@ interface HandlerInterface
     /**
      * 执行命中目标回调函数(方法)
      * @param array $params
-     * @return mixed
+     * @return $this
      */
     public function dispatch($params = []);
 

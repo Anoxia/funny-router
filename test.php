@@ -120,25 +120,39 @@ try {
 //
 //    $handler->dispatch();
 
-    $routes = [
-        'GET' => [
-            '/user' => ['\TestCollect', 'test', 3],
-            '/user/rank' => [TestCollect::class, 'get', 2]
-        ],
-        'POST' => [
-            '/user' => [TestCollect::class, 'test', 3],
-            '/user/rank' => [TestCollect::class, 'post', 2],
-            '/box' => []
-        ]
-    ];
+//    $routes = [
+//        'GET' => [
+//            '/user' => ['\TestCollect', 'test', 3],
+//            '/user/rank' => [TestCollect::class, 'get']
+//        ],
+//        'POST' => [
+//            '/user' => [TestCollect::class, 'test', 3],
+//            '/user/rank' => [TestCollect::class, 'post'],
+//            '/box' => []
+//        ]
+//    ];
 
-    $router->mount($routes);
+//    $router->mount($routes);
 
-    $handler = $router->handle('/user/r', 'POST');
+//    print_r($router->getRouteTree());
 
-    $handler->dispatch(['hello' => 'word']);
+//    $handler = $router->handle('/user/r', 'POST');
+
+//    $handler->dispatch(['hello' => 'word']);
 
 //    var_dump($handler->getReturnValue());
+
+    $router->get('/user', function () {
+        echo 'user';
+    });
+
+    $router->get('/', function () {
+        echo '/';
+    });
+
+    ($router->handle('/', 'GET'))->dispatch();
+
+//    print_r($router->getRouteTree());
 
 } catch (\Exception $e) {
     print_r($e);
